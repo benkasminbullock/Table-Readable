@@ -1,13 +1,13 @@
 =head1 NAME
 
-Table::Readable - read human-readable tabular information from a file
+Table::Readable - read human-editable tabular information from a file
 
 =head1 SYNOPSIS
 
     use Table::Readable qw/read_table/;
     my @list = read_table ("file.txt");
 
-=head1 DESCRIPTION
+=head1 FUNCTIONS
 
 =cut
 
@@ -47,6 +47,20 @@ If the key has spaces
 then it is turned into C<key_with_spaces> in the anonymous hash.
 
 Rows are separated by a blank line.
+
+So, for example
+
+    row: first
+    data: some information
+
+    row: second
+    data: more information
+    gubbins: guff here
+
+defines two rows, the first one gets a hash reference with entries
+C<row> and C<data>, and the second one is a hash reference with
+entries C<row> and C<data> and C<gubbins>, each containing the
+information on the right of the colon.
 
 If the key begins with two percentage symbols,
 
@@ -153,6 +167,8 @@ sub read_table
 
 Read a list of information from a file. Blank lines and lines
 beginning with a pound character, #, are ignored.
+
+The file is assumed to be in the UTF-8 encoding.
 
 =cut
 
