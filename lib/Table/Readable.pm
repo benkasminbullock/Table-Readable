@@ -7,6 +7,46 @@ Table::Readable - read human-editable tabular information from a file
     use Table::Readable qw/read_table/;
     my @list = read_table ("file.txt");
 
+=head1 DESCRIPTION
+
+Table::Readable enables human beings to create tables of information
+which a computer can understand.
+
+=head1 TABLE FORMAT
+
+The table is in the format
+
+    key1: value
+    key2: value
+
+    key1: another value
+    key2: yet more values
+
+where rows of the table are separated by a blank line, and the columns
+of each row are defined by giving the name of the column plus a colon
+plus the value.
+
+=head2 Multiline entries
+
+    %%key1:
+
+    value goes here.
+
+    %%
+
+Multiline entries begin and end with two percent characters at the
+beginning of the line. Between the two percent characters there may be
+any number of blank lines.
+
+=head2 Comments
+
+Lines containing a hash character '#' at the beginning of the line are
+ignored.
+
+=head2 Encoding
+
+The file must be encoded in the UTF-8 encoding.
+
 =head1 FUNCTIONS
 
 =cut
@@ -19,6 +59,7 @@ use warnings;
 use strict;
 our $VERSION = 0.01;
 use Carp;
+use File::Slurp;
 
 sub open_file
 {
@@ -86,14 +127,24 @@ The file is assumed to be in the UTF-8 encoding.
 
 sub read_table
 {
-    my ($list_file) = @_;
-    my $list = open_file ($list_file);
+    my ($list_file, %options) = @_;
     my @table;
     my $row = {};
     push @table, $row;
     my $mode = "single-line";
     my $mkey;
-    while (<$list>) {
+
+    my @lines;
+    if ($options{scalar}) {
+        @lines = split /\n/, $list_file;
+    }
+    else {
+        @lines = read_file ($list_file, binmode => 'utf8');
+    }
+    my $count = 0;
+    for (@lines) {
+
+        $count++;
 
         # Detect the first line of a cell of the table whose
         # information spans several lines of the input file.
@@ -111,7 +162,8 @@ sub read_table
             if (/^%%\s*$/) {
                 $mode = "single-line";
                 $mkey = undef;
-            } else {
+            }
+            else {
                 $row->{$mkey} .= $_;
             }
             next;
@@ -121,7 +173,8 @@ sub read_table
             # Skip comments.
 
             next;
-        } elsif (/([^:]+):\s*(.*?)\s*$/) {
+        }
+        elsif (/([^:]+):\s*(.*?)\s*$/) {
 
             # Key / value pair on a single line.
 
@@ -133,7 +186,7 @@ sub read_table
 
             $key =~ s/\s/_/g;
             if ($row->{$key}) {
-                croak "$list_file:$.: duplicate for key $key\n";
+                croak "$list_file:$count: duplicate for key $key\n";
             }
             $row->{$key} = $value;
         }
@@ -148,7 +201,7 @@ sub read_table
             next;
         }
         else {
-            warn "$list_file:$.: unmatched line '$_'\n";
+            warn "$list_file:$count: unmatched line '$_'\n";
         }
     }
     # Deal with the case of whitespace at the end of the file.
@@ -156,7 +209,6 @@ sub read_table
     if (keys %$last_row == 0) {
         pop @table;
     }
-    close $list or die $!;
     croak "read_table returns an array" unless wantarray ();
     return @table;
 }

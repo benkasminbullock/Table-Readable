@@ -16,7 +16,7 @@ eval {
     my $f = read_table ($bad_file_name);
 };
 
-like ($@, qr/not found/, "Non-existant file error test");
+like ($@, qr/no such file or directory/i, "Non-existant file error test");
 
 # Bad call with scalar return
 
