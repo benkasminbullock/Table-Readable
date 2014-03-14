@@ -118,6 +118,12 @@ the next line which begins with two percentage symbols. Thus
 
 assigns "this is the value" to "key".
 
+If the key contains spaces, these are replaced by underscores. For example,
+
+    this key: value
+
+becomes C<this_key> in the output.
+
 Comments can be added to the table using lines with # as the first
 character.
 
