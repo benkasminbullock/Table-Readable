@@ -129,6 +129,12 @@ character.
 
 The file is assumed to be in the UTF-8 encoding.
 
+=head3 Read from a scalar
+
+    my $table = read_table ($stuff, scalar => 1);
+
+Read from a scalar in C<$stuff>.
+
 =cut
 
 sub read_table
@@ -143,6 +149,10 @@ sub read_table
     my @lines;
     if ($options{scalar}) {
         @lines = split /\n/, $list_file;
+	for (@lines) {
+	    $_ .= "\n";
+	}
+	$lines[-1] =~ s/\n$//;
     }
     else {
         @lines = read_file ($list_file, binmode => 'utf8');
@@ -167,6 +177,10 @@ sub read_table
         if ($mode eq "multi-line") {
             if (/^%%\s*$/) {
                 $mode = "single-line";
+		if ($row->{$mkey}) {
+		    # Strip leading and trailing whitespace
+		    $row->{$mkey} =~ s/^\s+|\s+$//g;
+		}
                 $mkey = undef;
             }
             else {
