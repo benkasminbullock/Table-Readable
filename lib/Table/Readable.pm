@@ -57,7 +57,7 @@ require Exporter;
 @EXPORT_OK = qw/read_table read_list/;
 use warnings;
 use strict;
-our $VERSION = 0.01;
+our $VERSION = '0.01';
 use Carp;
 use File::Slurp;
 
