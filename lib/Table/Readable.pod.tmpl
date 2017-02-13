@@ -12,7 +12,7 @@ produces output
 [% END %]
 =head1 NAME
 
-Table::Readable - read human-editable tabular information from a file
+Table::Readable - minimalistic human-editable tables of data
 
 =head1 SYNOPSIS
 
@@ -150,6 +150,13 @@ The file is assumed to be in the UTF-8 encoding.
 Write the list in C<@list> to F<file.txt>. It insists on an array
 reference containing hash references, each of which has simple scalars
 as values.
+
+=head1 EXPORTS
+
+Nothing is exported by default. All functions can be exported on
+request. A tag ":all" exports all the functions:
+
+    use Table::Readable ':all';
 
 =head1 BUGS
 

@@ -20,5 +20,6 @@ WriteMakefile (
             bugtracker => "$repo/issues",
         },
     },
+    LICENSE => 'perl',
     MIN_PERL_VERSION => '5.006001',
 );
