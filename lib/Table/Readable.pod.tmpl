@@ -28,7 +28,8 @@ corresponding to git commit L<[% commit.commit %]|[% info.repo
 =head1 DESCRIPTION
 
 Table::Readable enables human beings to create tables of information
-which a computer can understand.
+which a computer can understand. By design, the format does not
+support any kind of nesting, and can only be text in UTF-8 encoding.
 
 =head1 TABLE FORMAT
 
@@ -153,6 +154,8 @@ as values.
 =head1 BUGS
 
 Whitespace is stripped from the end of the entry, so if you need an
-entry with spaces at the end there is currently no way to do that.
+entry with spaces at the end, you need to add your own encoding, such
+as using an exclamation mark at the end of your text to indicate the
+end of whitespace.
 
 [% INCLUDE "author" %]

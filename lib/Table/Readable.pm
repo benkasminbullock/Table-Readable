@@ -165,20 +165,31 @@ sub write_table
 	}
 	$n++;
     }
-    open my $out, ">:encoding(utf8)", $file or die "Can't open $file for writing: $!";
+    my $text = '';
     for (@$list) {
-	for my $k (keys %$_) {
+	for my $k (sort keys %$_) {
 	    my $v = $_->{$k};
-	    if (length ($v) + length ($k) > $maxlen) {
-		print $out "%%$k:\n$v\n%%\n";
+	    if (length ($v) + length ($k) > $maxlen ||
+		$v =~ /\n/) {
+		$text .=  "%%$k:\n$v\n%%\n";
 	    }
 	    else {
-		print $out "$k: $v\n";
+		$text .=  "$k: $v\n";
 	    }
 	}
-	print $out "\n";
+	$text .=  "\n";
     } 
-    close $out or die $!;
+    if ($file) {
+	open my $out, ">:encoding(utf8)", $file or die "Can't open $file for writing: $!";
+	print $out $text;
+	close $out or die $!;
+    }
+    elsif (defined (wantarray ())) {
+	return $text;
+    }
+    else {
+	print $text;
+    }
 }
 
 1;

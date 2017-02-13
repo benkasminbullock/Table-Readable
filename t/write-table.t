@@ -49,4 +49,8 @@ my $sonnet = $table->[1]{sonnet};
 $sonnet =~ s/^\s+|\s+$//g;
 is ($back[1]{sonnet}, $sonnet, "Got back extended text");
 unlink ($wfile) or warn "Failed to remove $wfile: $!";
+
+my $tbl = write_table ([{a => "b\nc"}]);
+like ($tbl, qr/%%a:/, "Use long format if value contains newlines");
+
 done_testing ();
