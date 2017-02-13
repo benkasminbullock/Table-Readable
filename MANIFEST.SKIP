@@ -10,3 +10,5 @@ Table-Readable-[0-9\.]+/.*
 ^MYMETA\..*$
 ^doc/bugs$
 ^PRIVATE$
+^t/write-test\.txt$
+

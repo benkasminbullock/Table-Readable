@@ -1,11 +1,13 @@
 package Table::Readable;
-require Exporter;
-@ISA = qw(Exporter);
-@EXPORT_OK = qw/read_table read_list/;
 use warnings;
 use strict;
+require Exporter;
+our @ISA = qw(Exporter);
+our @EXPORT_OK = qw/read_table read_list write_table/;
+our %EXPORT_TAGS = (all => \@EXPORT_OK);
 our $VERSION = '0.01';
 use Carp;
+
 
 sub read_file
 {
@@ -123,17 +125,6 @@ sub read_table
     return @table;
 }
 
-=head2 read_list
-
-    my @list = read_list ("file.txt");
-
-Read a list of information from a file. Blank lines and lines
-beginning with a pound character, #, are ignored.
-
-The file is assumed to be in the UTF-8 encoding.
-
-=cut
-
 sub read_list
 {
     my ($list_file) = @_;
@@ -147,6 +138,47 @@ sub read_list
     }
     close $list or die $!;
     return @table;
+}
+
+# Maximum length of a single-line entry.
+
+our $maxlen = 75;
+
+sub write_table
+{
+    my ($list, $file) = @_;
+    if (ref $list ne 'ARRAY') {
+	carp "First argument to 'write_table' must be array reference";
+	return;
+    }
+    my $n = 0;
+    for my $i (@$list) {
+	if (ref $i ne 'HASH') {
+	    carp "Elements of first argument to 'write_table' must be hash references";
+	    return;
+	}
+	for my $k (keys %$i) {
+	    if (ref $i->{$k}) {
+		carp "Non-scalar value in key $k of element $n";
+		return;
+	    }
+	}
+	$n++;
+    }
+    open my $out, ">:encoding(utf8)", $file or die "Can't open $file for writing: $!";
+    for (@$list) {
+	for my $k (keys %$_) {
+	    my $v = $_->{$k};
+	    if (length ($v) + length ($k) > $maxlen) {
+		print $out "%%$k:\n$v\n%%\n";
+	    }
+	    else {
+		print $out "$k: $v\n";
+	    }
+	}
+	print $out "\n";
+    } 
+    close $out or die $!;
 }
 
 1;

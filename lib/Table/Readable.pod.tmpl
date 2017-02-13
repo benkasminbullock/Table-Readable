@@ -1,4 +1,15 @@
 [% start_year=2010 %]
+[% MACRO example(file) BLOCK %]
+[%- pl = file _ ".pl" -%]
+[%- out = file _ "-out.txt" -%]
+[% INCLUDE $pl | xtidy %]
+
+produces output
+
+[% INCLUDE $out | xtidy %]
+
+(This example is included as L<F<[% pl %]>|https://api.metacpan.org/source/BKB/[% info.name %]-[% info.version %]/examples/[% pl %]> in the distribution.)
+[% END %]
 =head1 NAME
 
 Table::Readable - read human-editable tabular information from a file
@@ -7,6 +18,12 @@ Table::Readable - read human-editable tabular information from a file
 
     use Table::Readable qw/read_table/;
     my @list = read_table ("file.txt");
+
+=head1 VERSION
+
+This documents [% info.colon %] version [% info.version %]
+corresponding to git commit L<[% commit.commit %]|[% info.repo
+%]/commit/[% commit.commit %]> released on [% commit.date %].
 
 =head1 DESCRIPTION
 
@@ -115,5 +132,27 @@ The file is assumed to be in the UTF-8 encoding.
     my $table = read_table ($stuff, scalar => 1);
 
 Read from a scalar in C<$stuff>.
+
+=head2 read_list
+
+    my @list = read_list ("file.txt");
+
+Read a list of information from a file. Blank lines and lines
+beginning with a pound character, #, are ignored.
+
+The file is assumed to be in the UTF-8 encoding.
+
+=head2 write_list
+
+    write_list (\@list, 'file.txt');
+
+Write the list in C<@list> to F<file.txt>. It insists on an array
+reference containing hash references, each of which has simple scalars
+as values.
+
+=head1 BUGS
+
+Whitespace is stripped from the end of the entry, so if you need an
+entry with spaces at the end there is currently no way to do that.
 
 [% INCLUDE "author" %]
