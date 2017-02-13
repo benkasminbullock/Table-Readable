@@ -3,12 +3,22 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 my $pm = 'lib/Table/Readable.pm';
+my $pod = 'lib/Table/Readable.pod';
+my $repo = 'https://github.com/benkasminbullock/Table-Readable';
 
 WriteMakefile (
     NAME => 'Table::Readable',
     VERSION_FROM => $pm,
-    ABSTRACT_FROM => $pm,
+    ABSTRACT_FROM => $pod,
     PREREQ_PM => {
-	'File::Slurp' => 0,
+	'Carp' => 0,
     },
+    AUTHOR => 'Ben Bullock <bkb@cpan.org>',
+    META_MERGE => {
+        resources => {
+            repository => $repo,
+            bugtracker => "$repo/issues",
+        },
+    },
+    MIN_PERL_VERSION => '5.006001',
 );

@@ -11,3 +11,6 @@ Makefile
 
 pm_to_blib
 
+lib/Table/Readable.pod
+MANIFEST
+README

@@ -1,56 +1,3 @@
-=head1 NAME
-
-Table::Readable - read human-editable tabular information from a file
-
-=head1 SYNOPSIS
-
-    use Table::Readable qw/read_table/;
-    my @list = read_table ("file.txt");
-
-=head1 DESCRIPTION
-
-Table::Readable enables human beings to create tables of information
-which a computer can understand.
-
-=head1 TABLE FORMAT
-
-The table is in the format
-
-    key1: value
-    key2: value
-
-    key1: another value
-    key2: yet more values
-
-where rows of the table are separated by a blank line, and the columns
-of each row are defined by giving the name of the column plus a colon
-plus the value.
-
-=head2 Multiline entries
-
-    %%key1:
-
-    value goes here.
-
-    %%
-
-Multiline entries begin and end with two percent characters at the
-beginning of the line. Between the two percent characters there may be
-any number of blank lines.
-
-=head2 Comments
-
-Lines containing a hash character '#' at the beginning of the line are
-ignored.
-
-=head2 Encoding
-
-The file must be encoded in the UTF-8 encoding.
-
-=head1 FUNCTIONS
-
-=cut
-
 package Table::Readable;
 require Exporter;
 @ISA = qw(Exporter);
@@ -59,7 +6,18 @@ use warnings;
 use strict;
 our $VERSION = '0.01';
 use Carp;
-use File::Slurp;
+
+sub read_file
+{
+    my ($file) = @_;
+    my @rv;
+    open my $in, "<:encoding(utf8)", $file or die $!;
+    while (<$in>) {
+	push @rv, $_;
+    }
+    close $in or die $!;
+    return @rv;
+}
 
 sub open_file
 {
@@ -68,74 +26,6 @@ sub open_file
     open my $list, "<:encoding(utf8)", $list_file or die $!;
     return $list;
 }
-
-=head2 read_table
-
-    my @table = read_table ("list_file.txt");
-
-Read a table of information from the specified file. Each row of
-information is stored as an anonymous hash. 
-
-Each row of the table consists of key/value pairs. The key/value pairs
-are given in the form
-
-    key: value
-
-If the key has spaces
-
-    key with spaces: value
-
-then it is turned into C<key_with_spaces> in the anonymous hash.
-
-Rows are separated by a blank line.
-
-So, for example
-
-    row: first
-    data: some information
-
-    row: second
-    data: more information
-    gubbins: guff here
-
-defines two rows, the first one gets a hash reference with entries
-C<row> and C<data>, and the second one is a hash reference with
-entries C<row> and C<data> and C<gubbins>, each containing the
-information on the right of the colon.
-
-If the key begins with two percentage symbols,
-
-    %%key:
-
-then it marks the beginning of a multiline value which continues until
-the next line which begins with two percentage symbols. Thus
-
-    %%key:
-
-    this is the value
-
-    %%
-
-assigns "this is the value" to "key".
-
-If the key contains spaces, these are replaced by underscores. For example,
-
-    this key: value
-
-becomes C<this_key> in the output.
-
-Comments can be added to the table using lines with # as the first
-character.
-
-The file is assumed to be in the UTF-8 encoding.
-
-=head3 Read from a scalar
-
-    my $table = read_table ($stuff, scalar => 1);
-
-Read from a scalar in C<$stuff>.
-
-=cut
 
 sub read_table
 {
@@ -155,7 +45,7 @@ sub read_table
 	$lines[-1] =~ s/\n$//;
     }
     else {
-        @lines = read_file ($list_file, binmode => 'utf8');
+        @lines = read_file ($list_file);
     }
     my $count = 0;
     for (@lines) {
