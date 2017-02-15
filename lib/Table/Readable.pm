@@ -3,7 +3,7 @@ use warnings;
 use strict;
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT_OK = qw/read_table read_list write_table/;
+our @EXPORT_OK = qw/read_table write_table/;
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
 our $VERSION = '0.01';
 use Carp;
@@ -122,21 +122,6 @@ sub read_table
         pop @table;
     }
     croak "read_table returns an array" unless wantarray ();
-    return @table;
-}
-
-sub read_list
-{
-    my ($list_file) = @_;
-    my $list = open_file ($list_file);
-    my @table;
-    while (<$list>) {
-        next if /^\s*$/;
-        next if /^\s*#.*$/;
-        chomp;
-        push @table, $_;
-    }
-    close $list or die $!;
     return @table;
 }
 

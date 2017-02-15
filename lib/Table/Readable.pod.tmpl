@@ -60,7 +60,8 @@ any number of blank lines.
 =head2 Comments
 
 Lines containing a hash character '#' at the beginning of the line are
-ignored.
+ignored. However, lines containing a hash character '#' within
+multiline entries are considered part of the entry, not comments.
 
 =head2 Encoding
 
@@ -134,20 +135,11 @@ The file is assumed to be in the UTF-8 encoding.
 
 Read from a scalar in C<$stuff>.
 
-=head2 read_list
+=head2 write_table
 
-    my @list = read_list ("file.txt");
+    write_table (\@table, 'file.txt');
 
-Read a list of information from a file. Blank lines and lines
-beginning with a pound character, #, are ignored.
-
-The file is assumed to be in the UTF-8 encoding.
-
-=head2 write_list
-
-    write_list (\@list, 'file.txt');
-
-Write the list in C<@list> to F<file.txt>. It insists on an array
+Write the table in C<@table> to F<file.txt>. It insists on an array
 reference containing hash references, each of which has simple scalars
 as values.
 
