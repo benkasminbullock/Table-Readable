@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use FindBin '$Bin';
-use Test::More tests => 12;
+use Test::More;
 BEGIN { use_ok('Table::Readable') };
 use Table::Readable qw/read_table/;
 
@@ -51,7 +51,35 @@ my @j = read_table ("$Bin/test-duplicates.txt");
 };
 like ($@, qr/duplicate for key/i, "Test duplicate detection");
 
+# Check that whitespace immediately before the colon is converted to
+# an underscore.
 
-# Local variables:
-# mode: perl
-# End:
+my $t = <<EOF;
+this key : value
+EOF
+my @t = read_table ($t, scalar => 1);
+is ($t[0]{'this_key_'}, 'value');
+
+my $u = <<EOF;
+novalue:
+EOF
+my @u = read_table ($u, scalar => 1);
+ok (defined $u[0]{novalue});
+is ($u[0]{novalue}, '');
+
+my $v = <<EOF;
+%%v:
+# monkey
+%%
+EOF
+my @v = read_table ($v, scalar => 1);
+is ($v[0]{v}, "# monkey");
+
+my $w = <<EOF;
+w: walrus # eggman
+EOF
+my @w = read_table ($w, scalar => 1);
+is ($w[0]{w}, "walrus # eggman");
+
+
+done_testing ();

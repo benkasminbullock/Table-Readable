@@ -1,5 +1,5 @@
-[% start_year=2010 %]
-[% MACRO example(file) BLOCK %]
+[%- start_year=2010 -%]
+[%- MACRO example(file) BLOCK %]
 [%- pl = file _ ".pl" -%]
 [%- out = file _ "-out.txt" -%]
 [% INCLUDE $pl | xtidy %]
@@ -10,14 +10,15 @@ produces output
 
 (This example is included as L<F<[% pl %]>|https://api.metacpan.org/source/BKB/[% info.name %]-[% info.version %]/examples/[% pl %]> in the distribution.)
 [% END %]
+=encoding UTF-8
+
 =head1 NAME
 
 Table::Readable - minimalistic human-editable tables of data
 
 =head1 SYNOPSIS
 
-    use Table::Readable qw/read_table/;
-    my @list = read_table ("file.txt");
+[% example('synopsis') %]
 
 =head1 VERSION
 
@@ -27,45 +28,9 @@ corresponding to git commit L<[% commit.commit %]|[% info.repo
 
 =head1 DESCRIPTION
 
-Table::Readable enables human beings to create tables of information
-which a computer can understand. By design, the format does not
+Table::Readable provides a format for human-editable tables of
+information which a computer can read. By design, the format does not
 support any kind of nesting, and can only be text in UTF-8 encoding.
-
-=head1 TABLE FORMAT
-
-The table is in the format
-
-    key1: value
-    key2: value
-
-    key1: another value
-    key2: yet more values
-
-where rows of the table are separated by a blank line, and the columns
-of each row are defined by giving the name of the column plus a colon
-plus the value.
-
-=head2 Multiline entries
-
-    %%key1:
-
-    value goes here.
-
-    %%
-
-Multiline entries begin and end with two percent characters at the
-beginning of the line. Between the two percent characters there may be
-any number of blank lines.
-
-=head2 Comments
-
-Lines containing a hash character '#' at the beginning of the line are
-ignored. However, lines containing a hash character '#' within
-multiline entries are considered part of the entry, not comments.
-
-=head2 Encoding
-
-The file must be encoded in the UTF-8 encoding.
 
 =head1 FUNCTIONS
 
@@ -73,8 +38,9 @@ The file must be encoded in the UTF-8 encoding.
 
     my @table = read_table ("list_file.txt");
 
-Read a table of information from the specified file. Each row of
-information is stored as an anonymous hash. 
+Read one table of information from the specified file. Each row of
+information is stored as an anonymous hash. The return value is an
+array. It dies if not called in array context.
 
 Each row of the table consists of key/value pairs. The key/value pairs
 are given in the form
@@ -122,7 +88,12 @@ If the key contains spaces, these are replaced by underscores. For example,
 
     this key: value
 
-becomes C<this_key> in the output.
+becomes C<this_key> in the output. Whitespace before the colon is also
+converted, so
+
+    this key : value
+
+becomes C<this_key_> in the output, with an underscore at the end.
 
 Comments can be added to the table using lines with # as the first
 character.
@@ -143,6 +114,66 @@ Write the table in C<@table> to F<file.txt>. It insists on an array
 reference containing hash references, each of which has simple scalars
 as values.
 
+This does not convert underscores in the keys into spaces.
+
+=head1 TABLE FORMAT
+
+This section gives exact details of the format of the tables.
+
+The table takes the format
+
+    key1: value
+    key2: value
+
+    key1: another value
+    key2: yet more values
+
+where rows of the table are separated by a blank line, and the columns
+of each row are defined by giving the name of the column, followed by
+a colon, followed by the value.
+
+=head2 Multiline entries
+
+    %%key1:
+
+    value goes here.
+
+    %%
+
+Multiline entries begin and end with two percent characters at the
+beginning of the line. Between the two percent characters there may be
+any number of blank lines.
+
+=head2 Comments
+
+Lines containing a hash character '#' at the beginning of the line are
+ignored. However, lines containing a hash character '#' within
+multiline entries are considered part of the entry, not comments. Hash
+characters at positions other than the start of a line are not
+considered comments, and are not ignored.
+
+=head2 Encoding
+
+The file must be encoded in the UTF-8 encoding.
+
+=head2 Whitespace
+
+Whitespace (anything matching C<\s>) is stripped from the beginning
+and end of the value. To preserve whitespace, use your own syntax such
+as the following.
+
+[% example("whitespace") %]
+
+=head2 Empty values
+
+Keys without values, like
+
+    key:
+
+are permitted within the table. A key with no value results in the
+value for that key being an empty string, rather than the undefined
+value.
+
 =head1 EXPORTS
 
 Nothing is exported by default. All functions can be exported on
@@ -150,11 +181,50 @@ request. A tag ":all" exports all the functions:
 
     use Table::Readable ':all';
 
-=head1 BUGS
+=head1 HISTORY
 
-Whitespace is stripped from the end of the entry, so if you need an
-entry with spaces at the end, you need to add your own encoding, such
-as using an exclamation mark at the end of your text to indicate the
-end of whitespace.
+This module and the associated format was born out of exasperation
+with various complicated file formats, and the associated complicated
+parser software. In particular I originally made this module and
+format as an alternative to using the TMX format for translation
+memory files, and also out of frustration with the L<AppConfig>
+module. I currently use this to store translations, such as
+L<http://kanji.sljfaq.org/translations.txt>, and files of tabular
+information, such as
+L<https://www.lemoda.net/unix/troff-dictionary/dictionary.txt>.
+
+This format is deliberately designed to reduce the amount of mental
+effort necessary to type in machine-readable tables of information. By
+design, it adds only the most minimal possible interpretations to
+characters. There are only four significant characters, the newline,
+the colon, the hash character #, and the percent character %. The hash
+character and the percent character are only significant either when
+they come immediately after a new line or when they are the first byte
+in the file. The multiline escape sequence is two percents at the
+beginning of a line, a sequence which rarely occurs in normal
+text. 
+
+The minimalism of this module is intentional; I will never, ever, add
+new syntax, extra escape characters, comments not at the end of lines,
+nested tables, or multiple tables in one file to this format, and I
+would gladly remove anything from it, if there was anything that could
+possibly be removed. The reason for that is that every time one adds a
+new facility, it adds yet another meaning to some sequence of
+characters, which not only has to be remembered, but also has to be
+programmed around by adding yet another escape. Let's say that I added
+comments like this:
+
+     key: value # this is a comment
+
+then I would have to add yet another escape for the case where I
+actually wanted to put a hash character inside a value, yet another
+annoying bit of syntax to remember like
+
+     key: value \# not a comment
+
+The more one adds these kinds of meaningful characters, the more the
+complexity, the more the bugs, the more the workarounds, the more the
+fixes, and the more the number of things to remember, and the more the
+headaches. No thanks!
 
 [% INCLUDE "author" %]

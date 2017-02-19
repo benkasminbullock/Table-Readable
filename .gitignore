@@ -15,3 +15,4 @@ lib/Table/Readable.pod
 MANIFEST
 README
 t/write-test.txt
+examples/*-out.txt
