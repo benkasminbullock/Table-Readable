@@ -132,6 +132,10 @@ where rows of the table are separated by a blank line, and the columns
 of each row are defined by giving the name of the column, followed by
 a colon, followed by the value.
 
+=head2 Blank lines
+
+A blank line may contain spaces (something which matches C<\s>).
+
 =head2 Multiline entries
 
     %%key1:
@@ -142,7 +146,12 @@ a colon, followed by the value.
 
 Multiline entries begin and end with two percent characters at the
 beginning of the line. Between the two percent characters there may be
-any number of blank lines.
+any number of blank lines. Whitespace (anything matching C<\s>) is
+stripped from the beginning and end of the value. There is no way to
+have double percent characters at the beginning of a line within a
+multiline value, so if you need double percents, you must use a
+different syntax and then post-process the entry to convert your
+syntax to double percent characters.
 
 =head2 Comments
 
@@ -174,16 +183,9 @@ are permitted within the table. A key with no value results in the
 value for that key being an empty string, rather than the undefined
 value.
 
-=head1 EXPORTS
+=head2 Design and motivation
 
-Nothing is exported by default. All functions can be exported on
-request. A tag ":all" exports all the functions:
-
-    use Table::Readable ':all';
-
-=head1 HISTORY
-
-This module and the associated format was born out of exasperation
+This module and the associated format were born out of exasperation
 with various complicated file formats, and the associated complicated
 parser software. In particular I originally made this module and
 format as an alternative to using the TMX format for translation
@@ -194,15 +196,15 @@ information, such as
 L<https://www.lemoda.net/unix/troff-dictionary/dictionary.txt>.
 
 This format is deliberately designed to reduce the amount of mental
-effort necessary to type in machine-readable tables of information. By
-design, it adds only the most minimal possible interpretations to
-characters. There are only four significant characters, the newline,
-the colon, the hash character #, and the percent character %. The hash
-character and the percent character are only significant either when
-they come immediately after a new line or when they are the first byte
-in the file. The multiline escape sequence is two percents at the
-beginning of a line, a sequence which rarely occurs in normal
-text. 
+effort necessary to type in a machine-readable table of
+information. By design, it adds only the most minimal possible
+interpretations to characters. There are only four significant
+characters, the newline, the colon, the hash character #, and the
+percent character %. The hash character and the percent character are
+only significant either when they come immediately after a new line or
+when they are the first byte in the file. The multiline escape
+sequence is two percents at the beginning of a line, a sequence which
+rarely occurs in normal text.
 
 The minimalism of this module is intentional; I will never, ever, add
 new syntax, extra escape characters, comments not at the end of lines,
@@ -226,5 +228,12 @@ The more one adds these kinds of meaningful characters, the more the
 complexity, the more the bugs, the more the workarounds, the more the
 fixes, and the more the number of things to remember, and the more the
 headaches. No thanks!
+
+=head1 EXPORTS
+
+Nothing is exported by default. All functions can be exported on
+request. A tag ":all" exports all the functions:
+
+    use Table::Readable ':all';
 
 [% INCLUDE "author" %]
