@@ -16,3 +16,4 @@ MANIFEST
 README
 t/write-test.txt
 examples/*-out.txt
+Table-Readable-[0-9]*

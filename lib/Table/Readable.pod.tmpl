@@ -183,6 +183,13 @@ are permitted within the table. A key with no value results in the
 value for that key being an empty string, rather than the undefined
 value.
 
+=head2 Consistency of keys
+
+There is no requirement that the keys in one entry of the table have
+to be the same as the keys in the subsequent entry. Each entry of the
+table may have completely inconsistent keys. If you need consistent
+keys, add a post-processor of your own.
+
 =head2 Design and motivation
 
 This module and the associated format were born out of exasperation
