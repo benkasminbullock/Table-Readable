@@ -102,7 +102,7 @@ The file is assumed to be in the UTF-8 encoding.
 
 =head3 Read from a scalar
 
-    my $table = read_table ($stuff, scalar => 1);
+    my @table = read_table ($stuff, scalar => 1);
 
 Read from a scalar in C<$stuff>.
 
@@ -161,6 +161,11 @@ multiline entries are considered part of the entry, not comments. Hash
 characters at positions other than the start of a line are not
 considered comments, and are not ignored.
 
+Comments are not considered blank lines for the purpose of separating
+table rows.
+
+[% example("comment-not-row") %]
+
 =head2 Encoding
 
 The file must be encoded in the UTF-8 encoding.
@@ -183,12 +188,34 @@ are permitted within the table. A key with no value results in the
 value for that key being an empty string, rather than the undefined
 value.
 
+=head2 Key syntax
+
+A key is a series of one or more of any characters whatsoever except
+for colons. In regular expression language, a key matches $2 in the
+following:
+
+    ^(%%)?([^:]+)
+
+Keys cannot contain colons, so if you need to have colons in your
+keys, invent your own escape sequence, such as substituting semicolons
+or @ marks for colons.
+
 =head2 Consistency of keys
 
-There is no requirement that the keys in one entry of the table have
-to be the same as the keys in the subsequent entry. Each entry of the
-table may have completely inconsistent keys. If you need consistent
-keys, add a post-processor of your own.
+There is no requirement that the keys in one row of the table have to
+be the same as the keys in the subsequent row. Each row of the table
+may have completely inconsistent keys. If you need consistent keys,
+add a post-processor of your own.
+
+=head2 Uniqueness of keys
+
+Keys within a single row must be unique. A duplicate key within a row
+causes a fatal error.
+
+=head2 Unparseable lines
+
+Lines which are not part of a multiline value, are not comments, and
+do not contain a key, are discarded and a warning is printed.
 
 =head2 Design and motivation
 
@@ -235,6 +262,16 @@ The more one adds these kinds of meaningful characters, the more the
 complexity, the more the bugs, the more the workarounds, the more the
 fixes, and the more the number of things to remember, and the more the
 headaches. No thanks!
+
+=head1 DEPENDENCIES
+
+=over
+
+=item Carp
+
+L<Carp> is used for printing error messages.
+
+=back
 
 =head1 EXPORTS
 

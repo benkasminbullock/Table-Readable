@@ -113,7 +113,11 @@ sub read_table
             next;
         }
         else {
-            warn "$list_file:$count: unmatched line '$_'\n";
+	    my $file_line = "$list_file:$count:";
+	    if ($options{scalar}) {
+		$file_line = "$count:";
+	    }
+            warn "$file_line unmatched line '$_'\n";
         }
     }
     # Deal with the case of whitespace at the end of the file.
@@ -165,7 +169,7 @@ sub write_table
 	$text .=  "\n";
     } 
     if ($file) {
-	open my $out, ">:encoding(utf8)", $file or die "Can't open $file for writing: $!";
+	open my $out, ">:encoding(utf8)", $file or croak "Can't open $file for writing: $!";
 	print $out $text;
 	close $out or die $!;
     }

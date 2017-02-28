@@ -5,7 +5,6 @@ use Test::More;
 BEGIN { use_ok('Table::Readable') };
 use Table::Readable qw/read_table/;
 
-
 # Non-existent file
 
 my $bad_file_name = "/holy/non/existant/files/batman";
@@ -25,6 +24,13 @@ eval {
 };
 
 like ($@, qr/returns an array/, "Bad call with scalar return");
+
+eval {
+    read_table ("$Bin/test-table-1.txt");
+};
+
+like ($@, qr/returns an array/, "Bad call with void context");
+
 
 my @g = read_table ("$Bin/test-table-1.txt");
 
@@ -58,14 +64,14 @@ my $t = <<EOF;
 this key : value
 EOF
 my @t = read_table ($t, scalar => 1);
-is ($t[0]{'this_key_'}, 'value');
+is ($t[0]{'this_key_'}, 'value', "Correct reading of value");
 
 my $u = <<EOF;
 novalue:
 EOF
 my @u = read_table ($u, scalar => 1);
-ok (defined $u[0]{novalue});
-is ($u[0]{novalue}, '');
+ok (defined $u[0]{novalue}, "Defined for no value");
+is ($u[0]{novalue}, '', "Empty key for no value");
 
 my $v = <<EOF;
 %%v:
@@ -73,13 +79,25 @@ my $v = <<EOF;
 %%
 EOF
 my @v = read_table ($v, scalar => 1);
-is ($v[0]{v}, "# monkey");
+is ($v[0]{v}, "# monkey", "Hashes in multiline are not comments");
 
 my $w = <<EOF;
 w: walrus # eggman
 EOF
 my @w = read_table ($w, scalar => 1);
-is ($w[0]{w}, "walrus # eggman");
+is ($w[0]{w}, "walrus # eggman", "Hashes not at the start of the line are not comments");
+
+{
+    my $warning;
+    local $SIG{__WARN__} = sub {
+	$warning = "@_";
+    };
+    my $badline = <<EOF;
+not a valid line
+EOF
+    my @w = read_table ($badline, scalar => 1);
+    like ($warning, qr/^1: unmatched line/, "Correct warning for bad line");
+};
 
 
 done_testing ();
