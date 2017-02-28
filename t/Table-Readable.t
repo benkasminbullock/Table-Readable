@@ -7,7 +7,7 @@ use Table::Readable qw/read_table/;
 
 # Non-existent file
 
-my $bad_file_name = "/holy/non/existant/files/batman";
+my $bad_file_name = "/holy/non/existent/files/batman";
 
 die if -f $bad_file_name;
 
@@ -15,7 +15,8 @@ eval {
     my $f = read_table ($bad_file_name);
 };
 
-like ($@, qr/no such file or directory/i, "Non-existant file error test");
+like ($@, qr/Error opening '\Q$bad_file_name\E'/i,
+      "Non-existent file error test");
 
 # Bad call with scalar return
 

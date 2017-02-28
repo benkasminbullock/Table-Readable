@@ -5,7 +5,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw/read_table write_table/;
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use Carp;
 
 
@@ -13,7 +13,7 @@ sub read_file
 {
     my ($file) = @_;
     my @rv;
-    open my $in, "<:encoding(utf8)", $file or die $!;
+    open my $in, "<:encoding(utf8)", $file or die "Error opening '$file': $!";
     while (<$in>) {
 	push @rv, $_;
     }
