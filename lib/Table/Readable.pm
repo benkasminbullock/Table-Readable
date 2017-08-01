@@ -5,9 +5,8 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw/read_table write_table/;
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 use Carp;
-
 
 sub read_file
 {
