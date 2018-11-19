@@ -186,6 +186,16 @@ as the following.
 
 [% example("whitespace") %]
 
+Leading and trailing whitespace can be preserved by preceding it with
+a backslash character:
+
+[% example("slash") %]
+
+If you actually need a backslash at the start or end of your string,
+use a double backslash, C<\\>. In parts of the string other than the
+first or the last position, double backslashes are not treated
+specially.
+
 =head3 Empty values
 
 Keys without values, like

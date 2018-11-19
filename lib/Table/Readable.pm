@@ -20,14 +20,6 @@ sub read_file
     return @rv;
 }
 
-sub open_file
-{
-    my ($list_file) = @_;
-    croak "$list_file not found" unless -f $list_file;
-    open my $list, "<:encoding(utf8)", $list_file or die $!;
-    return $list;
-}
-
 sub read_table
 {
     my ($list_file, %options) = @_;
@@ -71,6 +63,8 @@ sub read_table
 		if ($row->{$mkey}) {
 		    # Strip leading and trailing whitespace
 		    $row->{$mkey} =~ s/^\s+|\s+$//g;
+		    # Strip leading and trailing slashes
+		    $row->{$mkey} =~ s/^\\|\\$//g;
 		}
                 $mkey = undef;
             }
@@ -99,6 +93,8 @@ sub read_table
             if ($row->{$key}) {
                 croak "$list_file:$count: duplicate for key $key\n";
             }
+	    # Strip leading and trailing slashes
+	    $value =~ s/^\\|\\$//g;
             $row->{$key} = $value;
         }
         elsif (/^\s*$/) {
