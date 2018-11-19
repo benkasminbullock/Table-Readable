@@ -247,12 +247,14 @@ L<https://www.lemoda.net/unix/troff-dictionary/dictionary.txt>.
 This format is designed to reduce the amount of mental effort
 necessary to type in a machine-readable table of information. By
 design, it adds only the most minimal possible interpretations to
-characters. There are only four significant characters, the newline,
-the colon, the hash character #, and the percent character %. The hash
-character and the percent character are only significant either when
-they come immediately after a new line or when they are the first byte
-in the file. The multiline escape sequence is two percents at the
-beginning of a line, a sequence which rarely occurs in normal text.
+characters. There are only five significant characters, the newline,
+the colon, the hash character #, the percent character %, and the
+backslash \. The hash character and the percent character are only
+significant either when they come immediately after a new line or when
+they are the first byte in the file, and the backslash is only
+significant in conjunction with leading or trailing white space. The
+multiline escape sequence is two percents at the beginning of a line,
+a sequence which rarely occurs in normal text.
 
 The minimalism of this module is intentional; I will never, ever, add
 new syntax, extra escape characters, comments not at the end of lines,
