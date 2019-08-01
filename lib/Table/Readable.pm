@@ -12,11 +12,11 @@ sub read_file
 {
     my ($file) = @_;
     my @rv;
-    open my $in, "<:encoding(utf8)", $file or die "Error opening '$file': $!";
+    open my $in, "<:encoding(utf8)", $file or croak "Error opening '$file': $!";
     while (<$in>) {
 	push @rv, $_;
     }
-    close $in or die $!;
+    close $in or croak $!;
     return @rv;
 }
 
@@ -166,7 +166,7 @@ sub write_table
     if ($file) {
 	open my $out, ">:encoding(utf8)", $file or croak "Can't open $file for writing: $!";
 	print $out $text;
-	close $out or die $!;
+	close $out or croak $!;
     }
     elsif (defined (wantarray ())) {
 	return $text;
