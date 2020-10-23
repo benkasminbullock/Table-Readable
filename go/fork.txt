@@ -1,0 +1,12 @@
+name: five
+b: q
+
+name: fork
+# The lhs of 制 is 牛 in IDS but it's a match for "fork". 朿 is atomic
+# in IDS. 乕 is another one which is broken into non-fork pieces but
+# matches "fork".
+b: q
+
+name: foo
+b: q
+

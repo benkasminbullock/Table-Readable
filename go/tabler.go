@@ -51,6 +51,8 @@ func ReadFile(fileName string) (table Table, err error) {
 	var key string
 	// The most recently-seen value
 	var value string
+	// In a comment
+	comment := false
 	kv := make(map[string]string)
 	dstring := string(data)
 	for _, b := range dstring {
@@ -89,6 +91,18 @@ func ReadFile(fileName string) (table Table, err error) {
 			}
 			continue
 		}
+		if line_start && !multi_line && b == '#' {
+			comment = true
+			line_start = false
+			continue
+		}
+		if comment {
+			if b == '\n' {
+				comment = false
+				line_start = true
+			}
+			continue
+		}
 		if b == ':' {
 			if multi_line {
 				value += string(b)
@@ -111,7 +125,8 @@ func ReadFile(fileName string) (table Table, err error) {
 				continue
 			}
 			if multi_key {
-				return nil, errors.New("Colon at end of key not found")
+				return nil, errors.New(fmt.Sprintf("Colon at end of key '%s' not found",
+					key))
 			}
 			if have_key {
 				if len(key) == 0 {
