@@ -45,14 +45,17 @@ sub read_table
 
         $count++;
 
-        # Detect the first line of a cell of the table whose
-        # information spans several lines of the input file.
+	if ($mode ne 'multi-line') {
 
-        if (/^%%\s*([^:]+):\s*$/) {
-            $mode = "multi-line";
-            $mkey = $1;
-            next;
-        }
+	    # Detect the first line of a cell of the table whose
+	    # information spans several lines of the input file.
+
+	    if (/^%%\s*([^:]+):\s*$/) {
+		$mode = "multi-line";
+		$mkey = $1;
+		next;
+	    }
+	}
 
         # Continue to process a table cell whose information spans
         # several lines of the input file.
@@ -67,10 +70,9 @@ sub read_table
 		    $row->{$mkey} =~ s/^\\|\\$//g;
 		}
                 $mkey = undef;
+		next;
             }
-            else {
-                $row->{$mkey} .= $_;
-            }
+	    $row->{$mkey} .= $_;
             next;
         }
         if (/^\s*#.*/) {
@@ -79,7 +81,7 @@ sub read_table
 
             next;
         }
-        elsif (/([^:]+):\s*(.*?)\s*$/) {
+        if (/([^:]+):\s*(.*?)\s*$/) {
 
             # Key / value pair on a single line.
 
@@ -96,8 +98,9 @@ sub read_table
 	    # Strip leading and trailing slashes
 	    $value =~ s/^\\|\\$//g;
             $row->{$key} = $value;
+	    next;
         }
-        elsif (/^\s*$/) {
+        if (/^\s*$/) {
 
             # A blank line signifies the end of a row.
 
@@ -107,13 +110,11 @@ sub read_table
             }
             next;
         }
-        else {
-	    my $file_line = "$list_file:$count:";
-	    if ($options{scalar}) {
-		$file_line = "$count:";
-	    }
-            warn "$file_line unmatched line '$_'\n";
-        }
+	my $file_line = "$list_file:$count:";
+	if ($options{scalar}) {
+	    $file_line = "$count:";
+	}
+	warn "$file_line unmatched line '$_'\n";
     }
     # Deal with the case of whitespace at the end of the file.
     my $last_row = $table[-1];
