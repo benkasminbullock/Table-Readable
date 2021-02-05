@@ -11,5 +11,5 @@ binmode STDOUT, ":encoding(utf8)";
 binmode STDERR, ":encoding(utf8)";
 $ENV{AUTHOR_TESTING} = 1; 
 use Test::Kwalitee 'kwalitee_ok';
-kwalitee_ok();
+kwalitee_ok(-has_meta_yml);
 done_testing ();
