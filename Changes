@@ -1,3 +1,7 @@
+0.04
+
+- Add function read_table_hash
+
 0.03 2018-11-19
 
 - Implement leading/trailing whitespace preservation

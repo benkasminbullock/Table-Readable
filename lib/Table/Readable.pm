@@ -3,9 +3,9 @@ use warnings;
 use strict;
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT_OK = qw/read_table write_table/;
+our @EXPORT_OK = qw/read_table write_table read_table_hash/;
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 use Carp;
 
 sub read_file
@@ -123,6 +123,28 @@ sub read_table
     }
     croak "read_table returns an array" unless wantarray ();
     return @table;
+}
+
+sub read_table_hash
+{
+    my ($list_file, $key, %options) = @_;
+    my @table = read_table ($list_file, %options);
+    my %hash;
+    my $i = -1;
+    for my $entry (@table) {
+	$i++;
+	my $ekey = $entry->{$key};
+	if (! $ekey) {
+	    carp "No $key entry for element $i of $list_file";
+	    next;
+	}
+	if ($hash{$ekey}) {
+	    carp "Table entries for $key are not unique, duplicate at $i";
+	    next;
+	}
+	$hash{$ekey} = $entry;
+    }
+    return \%hash;
 }
 
 # Maximum length of a single-line entry.

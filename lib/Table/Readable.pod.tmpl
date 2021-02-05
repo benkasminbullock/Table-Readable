@@ -106,6 +106,15 @@ The file is assumed to be in the UTF-8 encoding.
 
 Read from a scalar in C<$stuff>.
 
+=head2 read_table_hash
+
+    my $hash = read_table_hash ('table.txt', 'id');
+
+This reads the table specified in the first argument, then creates a
+hash reference using the key specified as the second argument. If some
+entries of the table do not have the specified key, or if some entries
+have the same value for the key, warnings are printed.
+
 =head2 write_table
 
     write_table (\@table, 'file.txt');
