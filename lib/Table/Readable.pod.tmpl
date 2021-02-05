@@ -125,6 +125,15 @@ as values.
 
 This does not convert underscores in the keys into spaces.
 
+If the name of the file is omitted, it prints to STDOUT.
+
+    write_table (\@table);
+
+If the caller asks for a return value, it returns the table as a
+string rather than printing it.
+
+    my $table = write_table (\@table);
+
 =head1 TABLE FORMAT
 
 This section gives exact details of the format of the tables.
