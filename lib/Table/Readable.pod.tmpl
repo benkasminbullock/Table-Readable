@@ -14,7 +14,7 @@ produces output
 
 =head1 NAME
 
-Table::Readable - minimalistic human-editable tables of data
+Table::Readable - Simple-to-edit tables of data
 
 =head1 SYNOPSIS
 
@@ -110,6 +110,11 @@ Read from a scalar in C<$stuff>.
 
     my $hash = read_table_hash ('table.txt', 'id');
 
+    my ($hash, $order) = read_table_hash ('table.txt', 'id');
+    for (@$order) {
+        print $hash->{$_}{value}, "\n";
+    }
+
 This reads the table specified in the first argument, then creates a
 hash reference using the key specified as the second argument. If some
 entries of the table do not have the specified key, or if some entries
@@ -133,6 +138,11 @@ If the caller asks for a return value, it returns the table as a
 string rather than printing it.
 
     my $table = write_table (\@table);
+
+If the width of an output line exceeds a maximum length, the entry is
+written using the L<multiline format|/Multiline values>. This maximum length is
+available as the global variable C<$Table::Readable::maxlen>. The
+default value is [% maxlen %].
 
 =head1 TABLE FORMAT
 
@@ -199,13 +209,8 @@ your syntax to double percent characters.
 =head3 Whitespace
 
 Whitespace (anything matching C<\s>) is stripped from the beginning
-and end of the value. To preserve whitespace, use your own syntax such
-as the following.
-
-[% example("whitespace") %]
-
-Leading and trailing whitespace can be preserved by preceding it with
-a backslash character:
+and end of the value.  Leading and trailing whitespace can be preserved by preceding it
+with a backslash character:
 
 [% example("slash") %]
 
@@ -213,6 +218,11 @@ If you actually need a backslash at the start or end of your string,
 use a double backslash, C<\\>. In parts of the string other than the
 first or the last position, double backslashes are not treated
 specially.
+
+Alternatively you could use your own syntax such
+as the following.
+
+[% example("whitespace") %]
 
 =head3 Empty values
 
@@ -296,6 +306,34 @@ The more one adds these kinds of meaningful characters, the more the
 complexity, the more the bugs, the more the workarounds, the more the
 fixes, and the more the number of things to remember, and the more the
 headaches. No thanks!
+
+=head1 OTHER
+
+There is a Go mode and an Emacs mode for this format as well as the
+CPAN Perl distribution. They are all part of the same github
+repository, so you can report issues or make pull requests at the same
+place as this.
+
+=head2 Emacs mode
+
+There is an Emacs mode for the format called F<table-readable-mode.el>
+in the top directory of the CPAN distribution or L<in the github
+repository|[% info.repo %]/blob/master/table-readable-mode.el>.
+
+This includes highlighting of comments and makes it easier to format
+paragraphs of multiline text.
+
+At the moment it is restricted to lower-case alphabetical keys,
+although that is not part of the format specification.
+
+=head2 Go mode
+
+There is L<a reader and writer of the format in Go in the github
+repository|[% info.repo %]/blob/master/go> including tests. I'm not
+currently making that much use of this code at the moment, since
+string manipulation in Go is a nuisance compared to Perl, and I've
+found it's usually easier to convert the tables to JSON in Perl then
+read the JSON into a C<map[string]string> in Go.
 
 =head1 DEPENDENCIES
 

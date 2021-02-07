@@ -8,6 +8,10 @@ my $hash = read_table_hash ("$Bin/test-hash.txt", 'id');
 is ($hash->{moo}{ja}, 'モー', "Got correct value for moo ja");
 is ($hash->{cola}{en}, 'Cola', "Got correct value for cola en");
 
+my (undef, $order) = read_table_hash ("$Bin/test-hash.txt", 'id');
+
+is_deeply ($order, [qw!moo fruit cola!], "Got order of keys");
+
 # Test failures
 
 {

@@ -7,6 +7,8 @@ use Perl::Build qw/get_info get_commit/;
 use Perl::Build::Pod ':all';
 use Deploy qw/do_system older/;
 use Getopt::Long;
+use lib "$Bin/lib";
+use Table::Readable;
 my $ok = GetOptions (
     'force' => \my $force,
     'verbose' => \my $verbose,
@@ -35,6 +37,7 @@ my $output = "$Bin/$pod";
 my %vars = (
     info => $info,
     commit => $commit,
+    maxlen => $Table::Readable::maxlen,
 );
 
 my $tt = Template->new (

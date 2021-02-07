@@ -5,7 +5,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw/read_table write_table read_table_hash/;
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 use Carp;
 
 sub read_file
@@ -131,9 +131,11 @@ sub read_table_hash
     my @table = read_table ($list_file, %options);
     my %hash;
     my $i = -1;
+    my @order;
     for my $entry (@table) {
 	$i++;
 	my $ekey = $entry->{$key};
+	push @order, $ekey;
 	if (! $ekey) {
 	    carp "No $key entry for element $i of $list_file";
 	    next;
@@ -144,7 +146,12 @@ sub read_table_hash
 	}
 	$hash{$ekey} = $entry;
     }
-    return \%hash;
+    if (wantarray) {
+	return \%hash, \@order;
+    }
+    else {
+	return \%hash;
+    }
 }
 
 # Maximum length of a single-line entry.
