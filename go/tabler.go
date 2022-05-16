@@ -3,6 +3,7 @@ package tabler
 import (
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -32,11 +33,7 @@ func addKey(kv map[string]string, key, value *string) {
 	*value = ""
 }
 
-func ReadFile(fileName string) (table Table, err error) {
-	data, err := ioutil.ReadFile(fileName)
-	if err != nil {
-		return nil, err
-	}
+func parseTable(data []byte) (table Table, err error) {
 	// True if we have just seen "\n":
 	line_start := true
 	// True if we have seen key:
@@ -161,4 +158,20 @@ func ReadFile(fileName string) (table Table, err error) {
 		table = append(table, kv)
 	}
 	return table, nil
+}
+
+func Read(r io.Reader) (table Table, err error) {
+	data, err := io.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+	return parseTable(data)
+}
+
+func ReadFile(fileName string) (table Table, err error) {
+	data, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		return nil, err
+	}
+	return parseTable(data)
 }
