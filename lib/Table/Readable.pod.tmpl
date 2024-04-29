@@ -120,6 +120,12 @@ hash reference using the key specified as the second argument. If some
 entries of the table do not have the specified key, or if some entries
 have the same value for the key, warnings are printed.
 
+=head2 sort_file
+
+    sort_file ($file, $tag);
+
+Sort the entries of C<$file> using the key C<$tag>.
+
 =head2 write_table
 
     write_table (\@table, 'file.txt');

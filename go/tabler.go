@@ -9,8 +9,16 @@ import (
 	"strings"
 )
 
-type Table []map[string]string
+type Entry map[string]string
+type Table []Entry
 
+func (entry Entry) Write(f io.Writer) {
+	for key, value := range entry {
+		fmt.Fprintf(f, "%%%%%s:\n%s\n%%%%\n", key, value)
+	}
+}
+
+// Write the table out
 func (table Table) Write(fileName string) (err error) {
 	f, err := os.Create(fileName)
 	if err != nil {
@@ -18,9 +26,7 @@ func (table Table) Write(fileName string) (err error) {
 	}
 	defer f.Close()
 	for _, entry := range table {
-		for key, value := range entry {
-			fmt.Fprintf(f, "%%%%%s:\n%s\n%%%%\n", key, value)
-		}
+		entry.Write(f)
 		fmt.Fprintf(f, "\n")
 	}
 	return nil
@@ -160,6 +166,7 @@ func parseTable(data []byte) (table Table, err error) {
 	return table, nil
 }
 
+// Read a table from r.
 func Read(r io.Reader) (table Table, err error) {
 	data, err := io.ReadAll(r)
 	if err != nil {
@@ -168,6 +175,7 @@ func Read(r io.Reader) (table Table, err error) {
 	return parseTable(data)
 }
 
+// Open the specified file and read its contents into a table.
 func ReadFile(fileName string) (table Table, err error) {
 	data, err := ioutil.ReadFile(fileName)
 	if err != nil {

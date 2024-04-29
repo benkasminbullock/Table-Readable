@@ -5,8 +5,12 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw/read_table write_table read_table_hash/;
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 use Carp;
+
+# Private routine. This reads the file in and turns it into an array
+# containing the lines of the file, without doing any further
+# processing work.
 
 sub read_file
 {
@@ -20,22 +24,33 @@ sub read_file
     return @rv;
 }
 
+sub scalar_to_lines
+{
+    my ($list_file) = @_;
+    my @lines = split /\n/, $list_file;
+    for (@lines) {
+	$_ .= "\n";
+    }
+    $lines[-1] =~ s/\n$//;
+    return @lines;
+}
+
 sub read_table
 {
+    croak "read_table returns an array" unless wantarray ();
     my ($list_file, %options) = @_;
+    # Return value
     my @table;
     my $row = {};
     push @table, $row;
+    # This variable controls whether we parse the current entry as a
+    # key/value pair on a single line, or one spanning multiple lines.
     my $mode = "single-line";
     my $mkey;
 
     my @lines;
     if ($options{scalar}) {
-        @lines = split /\n/, $list_file;
-	for (@lines) {
-	    $_ .= "\n";
-	}
-	$lines[-1] =~ s/\n$//;
+	@lines = scalar_to_lines ($list_file);
     }
     else {
         @lines = read_file ($list_file);
@@ -121,7 +136,6 @@ sub read_table
     if (keys %$last_row == 0) {
         pop @table;
     }
-    croak "read_table returns an array" unless wantarray ();
     return @table;
 }
 
@@ -152,6 +166,16 @@ sub read_table_hash
     else {
 	return \%hash;
     }
+}
+
+sub sort_file
+{
+    my ($file, $key) = @_;
+    my @lines = read_table ($file);
+    @lines = sort {
+	$a->{$key} cmp $b->{$key}
+    } @lines;
+    write_table (\@lines, $file);
 }
 
 # Maximum length of a single-line entry.
@@ -203,6 +227,25 @@ sub write_table
     }
     else {
 	print $text;
+    }
+}
+
+sub edit_entry
+{
+    my ($file, $key, %entry) = @_;
+    my @table = read_table ($file);
+    my $v = $entry{$key};
+    if (! $v) {
+	croak "Values for entry don't contain an entry for $key";
+    }
+    for my $entry (@table) {
+	if (! $entry->{$key}) {
+	    next;
+	}
+	if ($entry->{$key} ne $entry{$key}) {
+	    next;
+	}
+	print "Found the entry for $key.\n";
     }
 }
 
