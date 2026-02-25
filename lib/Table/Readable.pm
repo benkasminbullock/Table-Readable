@@ -155,7 +155,7 @@ sub read_table_hash
 	    next;
 	}
 	if ($hash{$ekey}) {
-	    carp "Table entries for $key are not unique, duplicate at $i";
+	    carp "Table entries for $key are not unique, duplicate '$ekey' at $i";
 	    next;
 	}
 	$hash{$ekey} = $entry;
