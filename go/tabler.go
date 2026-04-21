@@ -39,7 +39,7 @@ func addKey(kv map[string]string, key, value *string) {
 	*value = ""
 }
 
-func parseTable(data []byte) (table Table, err error) {
+func ParseTable(data []byte) (table Table, err error) {
 	// True if we have just seen "\n":
 	line_start := true
 	// True if we have seen key:
@@ -172,7 +172,7 @@ func Read(r io.Reader) (table Table, err error) {
 	if err != nil {
 		return nil, err
 	}
-	return parseTable(data)
+	return ParseTable(data)
 }
 
 // Open the specified file and read its contents into a table.
@@ -181,5 +181,5 @@ func ReadFile(fileName string) (table Table, err error) {
 	if err != nil {
 		return nil, err
 	}
-	return parseTable(data)
+	return ParseTable(data)
 }
