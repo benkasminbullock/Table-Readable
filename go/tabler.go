@@ -39,6 +39,8 @@ func addKey(kv map[string]string, key, value *string) {
 	*value = ""
 }
 
+// Given a table read into memory, parse it. This corresponds to using
+// scalar => 1 in read_table in the Perl version.
 func ParseTable(data []byte) (table Table, err error) {
 	// True if we have just seen "\n":
 	line_start := true
