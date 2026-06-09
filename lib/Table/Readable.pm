@@ -39,6 +39,10 @@ sub read_table
 {
     croak "read_table returns an array" unless wantarray ();
     my ($list_file, %options) = @_;
+    my $noslash = $options{noslash};
+    if (0 && $noslash) {
+	print "Not stripping out slashes\n";
+    }
     # Return value
     my @table;
     my $row = {};
@@ -81,8 +85,10 @@ sub read_table
 		if ($row->{$mkey}) {
 		    # Strip leading and trailing whitespace
 		    $row->{$mkey} =~ s/^\s+|\s+$//g;
-		    # Strip leading and trailing slashes
-		    $row->{$mkey} =~ s/^\\|\\$//g;
+		    if (! $noslash) {
+			# Strip leading and trailing slashes
+			$row->{$mkey} =~ s/^\\|\\$//g;
+		    }
 		}
                 $mkey = undef;
 		next;
@@ -111,7 +117,9 @@ sub read_table
                 croak "$list_file:$count: duplicate for key $key\n";
             }
 	    # Strip leading and trailing slashes
-	    $value =~ s/^\\|\\$//g;
+	    if (! $noslash) {
+		$value =~ s/^\\|\\$//g;
+	    }
             $row->{$key} = $value;
 	    next;
         }
