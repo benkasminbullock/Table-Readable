@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 )
@@ -184,4 +185,15 @@ func ReadFile(fileName string) (table Table, err error) {
 		return nil, err
 	}
 	return ParseTable(data)
+}
+
+func Append(fileName string, e Entry) {
+	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Printf("Error opening file %s:", fileName, err)
+		return
+	}
+	defer file.Close()
+	fmt.Fprintf(file, "\n")
+	e.Write(file)
 }
