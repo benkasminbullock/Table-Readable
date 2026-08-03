@@ -5,7 +5,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw/read_table write_table read_table_hash append_table/;
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
-our $VERSION = '0.07';
+our $VERSION = '0.06';
 use Carp;
 
 # Private routine. This reads the file in and turns it into an array
