@@ -3,9 +3,9 @@ use warnings;
 use strict;
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT_OK = qw/read_table write_table read_table_hash/;
+our @EXPORT_OK = qw/read_table write_table read_table_hash append_table/;
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 use Carp;
 
 # Private routine. This reads the file in and turns it into an array
@@ -213,17 +213,7 @@ sub write_table
     }
     my $text = '';
     for (@$list) {
-	for my $k (sort keys %$_) {
-	    my $v = $_->{$k};
-	    if (length ($v) + length ($k) > $maxlen ||
-		$v =~ /\n/) {
-		$text .=  "%%$k:\n$v\n%%\n";
-	    }
-	    else {
-		$text .=  "$k: $v\n";
-	    }
-	}
-	$text .=  "\n";
+	$text .= entry_to_text($_);
     } 
     if ($file) {
 	open my $out, ">:encoding(utf8)", $file or croak "Can't open $file for writing: $!";
@@ -255,6 +245,32 @@ sub edit_entry
 	}
 	print "Found the entry for $key.\n";
     }
+}
+
+sub append_table
+{
+    my ($file, %entry) = @_;
+    open my $out, '>>:encoding(utf8)', $file or die "Failed to open $file: $!";
+    print $out entry_to_text(\%entry);
+    close $out or die $!;
+}
+
+sub entry_to_text
+{
+    my ($entry) = @_;
+    my $text = '';
+    for my $k (sort keys %$entry) {
+	my $v = $entry->{$k};
+	if (length ($v) + length ($k) > $maxlen ||
+	    $v =~ /\n/) {
+	    $text .=  "%%$k:\n$v\n%%\n";
+	}
+	else {
+	    $text .=  "$k: $v\n";
+	}
+    }
+    $text .=  "\n";
+    return $text;
 }
 
 1;
