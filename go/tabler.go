@@ -6,16 +6,28 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"maps"
 	"os"
+	"slices"
 	"strings"
 )
 
 type Entry map[string]string
 type Table []Entry
 
+// See also Readable.pm
+var Maxlen = 75
+
 func (entry Entry) Write(f io.Writer) {
-	for key, value := range entry {
-		fmt.Fprintf(f, "%%%%%s:\n%s\n%%%%\n", key, value)
+	keys := slices.Sorted(maps.Keys(entry))
+	for _, key := range keys {
+		value := entry[key]
+		l := len(key) + len(value)
+		if l > Maxlen {
+			fmt.Fprintf(f, "%%%%%s:\n%s\n%%%%\n", key, value)
+		} else {
+			fmt.Fprintf(f, "%s: %s\n", key, value)
+		}
 	}
 }
 
@@ -190,7 +202,7 @@ func ReadFile(fileName string) (table Table, err error) {
 func Append(fileName string, e Entry) {
 	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Printf("Error opening file %s:", fileName, err)
+		log.Printf("Error opening file %s: %s", fileName, err)
 		return
 	}
 	defer file.Close()
