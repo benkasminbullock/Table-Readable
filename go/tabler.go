@@ -209,3 +209,39 @@ func Append(fileName string, e Entry) {
 	fmt.Fprintf(file, "\n")
 	e.Write(file)
 }
+
+func aInB(a, b Entry) bool {
+	for k, av := range a {
+		bv, bok := b[k]
+		if !bok {
+			return false
+		}
+		if bv != av {
+			return false
+		}
+	}
+	return true
+}
+
+func entriesSame(a, b Entry) bool {
+	if aInB(a, b) && aInB(b, a) {
+		return true
+	}
+	return false
+}
+
+func Replace(fileName string, old Entry, new Entry) (err error) {
+	var table Table
+	table, err = ReadFile(fileName)
+	found := false
+	for i, e := range table {
+		if entriesSame(e, old) {
+			found = true
+			table[i] = new
+		}
+	}
+	if !found {
+		return fmt.Errorf("Entry %v not found in %s", fileName)
+	}
+	return table.Write(fileName)
+}
