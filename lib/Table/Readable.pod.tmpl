@@ -328,7 +328,7 @@ headaches. No thanks!
 
 =head1 OTHER
 
-There is a Go mode and an Emacs mode for this format as well as the
+There is a Go version and an Emacs mode for this format as well as the
 CPAN Perl distribution. They are all part of the same github
 repository, so you can report issues or make pull requests at the same
 place as this.
@@ -345,14 +345,12 @@ paragraphs of multiline text.
 At the moment it is restricted to lower-case alphabetical keys,
 although that is not part of the format specification.
 
-=head2 Go mode
+=head2 Go version
 
 There is L<a reader and writer of the format in Go in the github
-repository|[% info.repo %]/blob/master/go> including tests. I'm not
-currently making that much use of this code at the moment, since
-string manipulation in Go is a nuisance compared to Perl, and I've
-found it's usually easier to convert the tables to JSON in Perl then
-read the JSON into a C<map[string]string> in Go.
+repository|[% info.repo %]/blob/master/go> including tests. I'm trying
+to synchronise functionality between this Perl version and the Go
+version.
 
 =head1 DEPENDENCIES
 
@@ -361,6 +359,16 @@ read the JSON into a C<map[string]string> in Go.
 =item Carp
 
 L<Carp> is used for printing error messages.
+
+=back
+
+=head1 HISTORY
+
+=over
+
+=item 0.07
+
+The function L</replace> was added. Perl 5.36 was made a requirement.
 
 =back
 

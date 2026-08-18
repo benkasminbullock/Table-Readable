@@ -1,6 +1,7 @@
 0.07 2026-08-18
 
 - Requires Perl 5.36
+- Added "replace" function
 
 0.06 2026-08-03
 
