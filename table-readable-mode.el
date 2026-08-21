@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t; -*-
+
 ;; table-readable-mode.el --- Major mode for the Table::Readable format
 (defvar table-readable-font-lock-defaults
   `((
