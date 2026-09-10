@@ -241,7 +241,7 @@ func Replace(fileName string, old Entry, new Entry) (err error) {
 		}
 	}
 	if !found {
-		return fmt.Errorf("Entry %v not found in %s", fileName)
+		return fmt.Errorf("Entry %v not found in %s", old, fileName)
 	}
 	return table.Write(fileName)
 }
